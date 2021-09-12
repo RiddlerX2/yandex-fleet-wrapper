@@ -82,12 +82,12 @@ class Fleet {
 
 	randHex = (len) => {
 		let maxlen = 8,
-			min = Math.pow(16, Math.min(len, maxlen) - 1) 
+			min = Math.pow(16, Math.min(len, maxlen) - 1), 
 			max = Math.pow(16, Math.min(len, maxlen)) - 1,
 			n   = Math.floor(Math.random() * (max - min + 1)) + min,
 			r   = n.toString(16);
 		while (r.length < len) {
-			r += randHex(len - maxlen);
+			r += this.randHex(len - maxlen);
 		}
 		return r;
 	};	
@@ -115,14 +115,8 @@ class Fleet {
 				data : data
 			}).then(
 				(result) => {
-					console.log(result);
 					/*If operation succeeded on API's side return data*/
-					//if (result.data.status == 'ok') {
-					//	callback(false, result.data);
-					//} else {
-						/*Else return data with description as error*/
-					//	callback(result.data, false);
-					//}
+					callback(false, result.data);
 				}
 			).catch(
 				(error) => {
@@ -134,7 +128,7 @@ class Fleet {
 
 	executePromise(operation, data) {
 		return new Promise((resolve, reject) => {
-			this.execute(operation, params, (error, data) => {
+			this.execute(operation, data, (error, data) => {
 				if (error) {
 					reject(error);
 				} else {
@@ -152,11 +146,11 @@ class Fleet {
 				let data = await this.executePromise(item.operation, item.data);
 				item.callback(false, data);
 			} catch (error) {
-				item.callback(data, false);
+				item.callback(error, false);
 			}	
 		}
 		if (this.queueList.length > 0) {
-			this.#queueID = setTimeout(() => {this.runQueue()}, 1000);
+			this.#timerID = setTimeout(() => {this.runQueue()}, 1000);
 		} else {
 			this.#timerID = null
 		}
@@ -170,7 +164,7 @@ class Fleet {
 		}
 		this.queueList.push(item);
 		if (!this.#timerID) {
-			this.#queueID = setTimeout(() => {this.runQueue()}, 0);
+			this.#timerID = setTimeout(() => {this.runQueue()}, 0);
 		}
 	}
 }
