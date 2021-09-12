@@ -1,0 +1,27 @@
+{
+  "name": "iqsms-wrapper",
+  "version": "1.0.1",
+  "description": "Module provide simple access to REST API of the IQSMS automated message delivery",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "SMS",
+    "REST",
+    "Messages",
+    "Mailing"
+  ],
+  "author": "RiddlerX2",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RiddlerX2/iqsms-wrapper"
+  },
+  "engines": {
+    "node": ">=13.6.0"
+  },
+  "dependencies": {
+    "axios": "^0.21.4"
+  }
+}
