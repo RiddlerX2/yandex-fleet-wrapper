@@ -101,9 +101,8 @@ class Fleet {
 		} else if (!commands.includes(operation)) {
 			callback(messages[this.#language].operation_error, false);
 		} else {
-			// Prepare here!!!
-
 			/*Send data to server*/
+			/*TO DO: Multipaging*/
 			axios({
 				method : 'POST', //as described in documentation (link above)
 				url : `${this.execURLPrefix}${operation}${this.execURLSuffix}`,
@@ -145,6 +144,7 @@ class Fleet {
 		if (item) {
 			this.queueList.splice(0, 1);
 			try {
+				/*Wait until operation finished because of Yandex limitations*/
 				let data = await this.executePromise(item.operation, item.data);
 				item.callback(false, data);
 			} catch (error) {
