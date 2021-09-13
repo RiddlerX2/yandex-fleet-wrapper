@@ -167,6 +167,111 @@ class Fleet {
 			this.#timerID = setTimeout(() => {this.runQueue()}, 0);
 		}
 	}
+
+	drivers() {
+		let data = {
+			limit : 1000,
+			offset : 0,
+			query : {
+				park : {
+					id : this.#parkID
+				},
+				fields : {
+					car : [],
+					park : []
+				}
+			},
+			sort_order : [
+				{
+					direction : 'desc',
+					field : 'driver_profile.created_date'
+				}
+			]
+		};
+
+		return new Promise((resolve, reject) => {
+			this.queue('driver-profiles/list', data, (err, res) => {
+				if (err) {
+					reject(err);
+				}
+				resolve(res);
+			});
+		});
+	}
+
+	orders(timeFrom, timeTo) {
+		let data = {
+			limit : 500,
+			query : {
+				park : {
+					id : this.#parkID,
+					order : {
+						ended_at : {
+							from : timeFrom,
+							to : timeTo
+						}
+					}
+				}
+			}
+		};
+
+		return new Promise((resolve, reject) => {
+			this.queue('orders/list', data, (err, res) => {
+				if (err) {
+					reject(err);
+				}
+				resolve(res);
+			});
+		});
+	}
+
+	transactions(driver, timeFrom, timeTo) {
+		let data = {
+			limit : 1000,
+			query : {
+				park : {
+					id : this.#parkID,
+					driver_profile : {
+						id : driver
+					},
+					transaction : {
+						event_at : {
+							from : timeFrom,
+							to : timeTo
+						}
+					}
+				}
+			}
+		};
+
+		return new Promise((resolve, reject) => {
+			this.queue('driver-profiles/transactions/list', data, (err, res) => {
+				if (err) {
+					reject(err);
+				}
+				resolve(res);
+			});
+		});
+	}
+
+	transaction(driver, amount, remarks) {
+		let data = {
+			amount: `${amount}`,
+			category_id: 'partner_service_manual',
+			description: remarks,
+			driver_profile_id: driver,
+			park_id: this.#parkID
+		};
+
+		return new Promise((resolve, reject) => {
+			this.queue('driver-profiles/transactions', data, (err, res) => {
+				if (err) {
+					reject(err);
+				}
+				resolve(res);
+			});
+		});
+	}
 }
 
 /*Export class to outside*/
