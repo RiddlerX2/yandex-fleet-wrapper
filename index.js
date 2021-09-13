@@ -126,6 +126,7 @@ class Fleet {
 		}
 	}
 
+	/*Promisified execution for queue*/
 	executePromise(operation, data) {
 		return new Promise((resolve, reject) => {
 			this.execute(operation, data, (error, data) => {
@@ -138,6 +139,7 @@ class Fleet {
 		});
 	}
 
+	/*Queue runner once per second // Yandex not allow more then 1 query per 0.5 seconds that's why using delayed queue*/
 	async runQueue() {
 		let item = this.queueList[0];
 		if (item) {
@@ -156,6 +158,7 @@ class Fleet {
 		}
 	}
 
+	/*Append task to queue*/
 	queue(operation, data, callback) {
 		let item = {
 			operation : operation,
@@ -168,6 +171,7 @@ class Fleet {
 		}
 	}
 
+	/*Simplified task creator for listing all drivers*/
 	drivers() {
 		let data = {
 			limit : 1000,
@@ -199,6 +203,7 @@ class Fleet {
 		});
 	}
 
+	/*Simplified task creator for listing all orders*/
 	orders(timeFrom, timeTo) {
 		let data = {
 			limit : 500,
@@ -225,6 +230,7 @@ class Fleet {
 		});
 	}
 
+	/*Simplified task creator for listing all transactions*/
 	transactions(driver, timeFrom, timeTo) {
 		let data = {
 			limit : 1000,
@@ -254,6 +260,7 @@ class Fleet {
 		});
 	}
 
+	/*Simplified task for creating new transaction*/
 	transaction(driver, amount, remarks) {
 		let data = {
 			amount: `${amount}`,
