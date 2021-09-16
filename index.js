@@ -31,14 +31,14 @@ const messages = {
 }
 
 const commands = [
-	'cars/list', 
-	'driver-profiles/list',
-	'orders/list',
-	'orders/track',
-	'driver-profiles/transactions',
-	'driver-profiles/transactions/list',
-	'transactions/list',
-	'orders/transactions/list'
+	'v1/parks/cars/list', 
+	'v1/parks/driver-profiles/list',
+	'v1/parks/orders/list',
+	'v1/parks/orders/track',
+	'v2/parks/driver-profiles/transactions',
+	'v2/parks/driver-profiles/transactions/list',
+	'v2/parks/transactions/list',
+	'v2/parks/orders/transactions/list'
 ];
 
 /*Main class*/
@@ -49,7 +49,7 @@ class Fleet {
 	#token;
 	#timerID = null;
 	/*Default REST point of Yandex.Fleet*/
-	execURLPrefix = `https://fleet-api.taxi.yandex.net/v1/parks/`;
+	execURLPrefix = `https://fleet-api.taxi.yandex.net/`;
 	execURLSuffix = ``;
 	/*Initialise class with "new"*/
 	constructor (parkID, token, language, execURLPrefix, execURLSuffix) {
@@ -193,7 +193,7 @@ class Fleet {
 			]
 		};
 		return new Promise((resolve, reject) => {
-			this.queue('driver-profiles/list', data, (err, res) => {
+			this.queue('v1/parks/driver-profiles/list', data, (err, res) => {
 				if (err) {
 					reject(err);
 				}
@@ -220,7 +220,7 @@ class Fleet {
 		};
 
 		return new Promise((resolve, reject) => {
-			this.queue('orders/list', data, (err, res) => {
+			this.queue('v1/parks/orders/list', data, (err, res) => {
 				if (err) {
 					reject(err);
 				}
@@ -250,7 +250,7 @@ class Fleet {
 		};
 
 		return new Promise((resolve, reject) => {
-			this.queue('driver-profiles/transactions/list', data, (err, res) => {
+			this.queue('v2/parks/driver-profiles/transactions/list', data, (err, res) => {
 				if (err) {
 					reject(err);
 				}
@@ -270,7 +270,7 @@ class Fleet {
 		};
 
 		return new Promise((resolve, reject) => {
-			this.queue('driver-profiles/transactions', data, (err, res) => {
+			this.queue('v2/parks/driver-profiles/transactions', data, (err, res) => {
 				if (err) {
 					reject(err);
 				}
