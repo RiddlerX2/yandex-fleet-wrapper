@@ -192,7 +192,6 @@ class Fleet {
 				}
 			]
 		};
-
 		return new Promise((resolve, reject) => {
 			this.queue('driver-profiles/list', data, (err, res) => {
 				if (err) {
