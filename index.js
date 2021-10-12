@@ -152,7 +152,7 @@ class Fleet {
 			}	
 		}
 		if (this.queueList.length > 0) {
-			this.#timerID = setTimeout(() => {this.runQueue()}, 1000);
+			this.#timerID = setTimeout(() => {this.runQueue()}, 2000);
 		} else {
 			this.#timerID = null
 		}
