@@ -142,7 +142,6 @@ class Fleet {
 	async runQueue() {
 		let item = this.queueList[0];
 		if (item) {
-			this.queueList.splice(0, 1);
 			try {
 				/*Wait until operation finished because of Yandex limitations*/
 				let data = await this.executePromise(item.operation, item.data);
@@ -150,6 +149,7 @@ class Fleet {
 			} catch (error) {
 				item.callback(error, false);
 			}	
+			this.queueList.splice(0, 1);
 		}
 		if (this.queueList.length > 0) {
 			this.#timerID = setTimeout(() => {this.runQueue()}, 2000);
@@ -249,6 +249,14 @@ class Fleet {
 			}
 		};
 
+		for (let item of this.queueList) {
+			if (item.data.query.park.driver_profile == data.query.park.driver_profile) {
+				return new Promise((resolve, reject) => {
+					reject('Duplicate queue entry ' + JSON.stringify(data));
+				});
+			}
+		}
+
 		return new Promise((resolve, reject) => {
 			this.queue('v2/parks/driver-profiles/transactions/list', data, (err, res) => {
 				if (err) {
@@ -268,6 +276,14 @@ class Fleet {
 			driver_profile_id: driver,
 			park_id: this.#parkID
 		};
+
+		for (let item of this.queueList) {
+			if (item.data.amount == data.amount && item.data.description == data.description && item.data.driver_profile_id == data.driver_profile_id) {
+				return new Promise((resolve, reject) => {
+					reject('Duplicate queue entry ' + JSON.stringify(data));
+				});
+			}
+		}
 
 		return new Promise((resolve, reject) => {
 			this.queue('v2/parks/driver-profiles/transactions', data, (err, res) => {
