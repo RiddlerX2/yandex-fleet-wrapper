@@ -69,6 +69,7 @@ class Fleet {
 		if (execURLSuffix) {
 			this.execURLSuffix = execURLSuffix;
 		};
+		this.#timerID = setTimeout(() => {this.runQueue()}, 0);
 	};
 	
 	/*Simple detectors of Objects and Arrays*/
@@ -93,7 +94,7 @@ class Fleet {
 	};	
 	
 	/*Unified execute action with callback*/
-	execute(operation, data, callback) {
+	execute(operation, data, idKey, callback) {
 		if (!callback instanceof Function) {
 			throw messages[this.#language].callback_invalid;
 		} else if (!this.isObject(data)) {
@@ -109,7 +110,7 @@ class Fleet {
 				headers : {
 					'X-Client-ID' : `taxi/park/${this.#parkID}`,
 					'X-API-Key' : this.#token,
-					'X-Idempotency-Token' : this.randHex(32)
+					'X-Idempotency-Token' : idKey || this.randHex(32)
 				},
 				data : data
 			}).then(
@@ -126,9 +127,9 @@ class Fleet {
 	}
 
 	/*Promisified execution for queue*/
-	executePromise(operation, data) {
+	executePromise(operation, data, idKey) {
 		return new Promise((resolve, reject) => {
-			this.execute(operation, data, (error, data) => {
+			this.execute(operation, data, idKey, (error, data) => {
 				if (error) {
 					reject(error);
 				} else {
@@ -144,31 +145,25 @@ class Fleet {
 		if (item) {
 			try {
 				/*Wait until operation finished because of Yandex limitations*/
-				let data = await this.executePromise(item.operation, item.data);
+				let data = await this.executePromise(item.operation, item.data, item.idKey);
 				item.callback(false, data);
 			} catch (error) {
 				item.callback(error, false);
 			}	
 			this.queueList.splice(0, 1);
 		}
-		if (this.queueList.length > 0) {
-			this.#timerID = setTimeout(() => {this.runQueue()}, 2000);
-		} else {
-			this.#timerID = null
-		}
+		this.#timerID = setTimeout(() => {this.runQueue()}, 2000);
 	}
 
 	/*Append task to queue*/
-	queue(operation, data, callback) {
+	queue(operation, data, idKey, callback) {
 		let item = {
 			operation : operation,
 			data : data,
-			callback : callback
+			callback : callback,
+			idKey : idKey
 		}
 		this.queueList.push(item);
-		if (!this.#timerID) {
-			this.#timerID = setTimeout(() => {this.runQueue()}, 0);
-		}
 	}
 
 	/*Simplified task creator for listing all drivers*/
@@ -193,7 +188,7 @@ class Fleet {
 			]
 		};
 		return new Promise((resolve, reject) => {
-			this.queue('v1/parks/driver-profiles/list', data, (err, res) => {
+			this.queue('v1/parks/driver-profiles/list', data, null, (err, res) => {
 				if (err) {
 					reject(err);
 				}
@@ -220,7 +215,7 @@ class Fleet {
 		};
 
 		return new Promise((resolve, reject) => {
-			this.queue('v1/parks/orders/list', data, (err, res) => {
+			this.queue('v1/parks/orders/list', data, null, (err, res) => {
 				if (err) {
 					reject(err);
 				}
@@ -258,7 +253,7 @@ class Fleet {
 		}
 
 		return new Promise((resolve, reject) => {
-			this.queue('v2/parks/driver-profiles/transactions/list', data, (err, res) => {
+			this.queue('v2/parks/driver-profiles/transactions/list', data, null, (err, res) => {
 				if (err) {
 					reject(err);
 				}
@@ -268,7 +263,7 @@ class Fleet {
 	}
 
 	/*Simplified task for creating new transaction*/
-	transaction(driver, amount, remarks) {
+	transaction(driver, amount, remarks, idKey) {
 		let data = {
 			amount: `${amount}`,
 			category_id: 'partner_service_manual',
@@ -286,7 +281,7 @@ class Fleet {
 		}
 
 		return new Promise((resolve, reject) => {
-			this.queue('v2/parks/driver-profiles/transactions', data, (err, res) => {
+			this.queue('v2/parks/driver-profiles/transactions', data, idKey, (err, res) => {
 				if (err) {
 					reject(err);
 				}
