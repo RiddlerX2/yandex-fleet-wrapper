@@ -1,5 +1,5 @@
 /*
-    Yandex.Fleet wrapper v.1.2.2
+    Yandex.Fleet wrapper
     Allow send commands to Yandex services
     This module for car rent services only! Not for taxi drivers or customers!
     
@@ -315,7 +315,7 @@ class Fleet {
             park_id: this.#parkID
         }
         return new Promise((resolve, reject) => {
-            this.queue(commands[4], 'GET', data, idKey, (err, res) => {
+            this.queue(commands[4], 'GET', data, null, (err, res) => {
                 if (err) {
                     reject(err);
                 }
