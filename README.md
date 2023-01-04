@@ -1,8 +1,8 @@
 # yandex-fleet-wrapper
 Wrapper for Yandex.Fleet API
 
-- Allow send commands to Yandex services
-- This module for car rent services only! Not for taxi drivers or customers!
+Allow send commands to Yandex services
+This module for car rent services only! Not for taxi drivers or customers!
 
 For more information about operations and its parameters look at:
     https://fleet.taxi.yandex.ru/docs/api/reference/index.html
