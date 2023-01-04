@@ -1,5 +1,5 @@
 /*
-    Yandex.Fleet wrapper v.1.2.1
+    Yandex.Fleet wrapper v.1.2.2
     Allow send commands to Yandex services
     This module for car rent services only! Not for taxi drivers or customers!
     
@@ -45,12 +45,12 @@ const commands = [
     'v2/parks/driver-profiles/transactions/list', //
     'v2/parks/driver-profiles/transactions', //
     /*Append on 1.2.0*/
-    '/v1/parks/driver-work-rules',
+    'v1/parks/driver-work-rules',
     /*Planned on 1.2.x*/
-    '/v2/parks/vehicles/car',
-    '/v1/parks/cars/list',
-    '/v1/parks/driver-profiles/car-bindings',
-    '/v2/parks/contractors/driver-profile',
+    'v2/parks/vehicles/car',
+    'v1/parks/cars/list',
+    'v1/parks/driver-profiles/car-bindings',
+    'v2/parks/contractors/driver-profile',
     'v1/parks/orders/track',
     'v2/parks/transactions/list',
     'v2/parks/orders/transactions/list',
