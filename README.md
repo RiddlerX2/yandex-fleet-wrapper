@@ -20,12 +20,12 @@ For more information about operations and its parameters look at:
 За дополнительной информацией по API обращайтесь к документации по адресу:
     https://fleet.taxi.yandex.ru/docs/api/reference/index.html
 
-##Installation:
+## Installation:
 ```
 npm i yandex-fleet-wrapper
 ```
 
-##Usage:
+## Usage:
 Create object
 ```
 const Fleet = require('yandex-fleet-wrapper').Fleet;
