@@ -31,8 +31,8 @@ Create object
 const Fleet = require('yandex-fleet-wrapper').Fleet;
 
 let fleet = new Fleet(
-    'Yuor park ID', 
-    'Yuor park auth token'
+    'Your park ID', 
+    'Your park auth token'
     [, 'Language code (ru, en)' 
     [, 'URL Prefix' 
     [, 'URL suffix' ]]]
