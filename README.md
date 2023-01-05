@@ -26,15 +26,16 @@ npm i yandex-fleet-wrapper
 ```
 
 ## Supported and planned API points
-- [x] in v. 1.0.1 v1/parks/driver-profiles/list
-- [x] in v. 1.0.1 v1/parks/orders/list
-- [x] in v. 1.0.1 v2/parks/driver-profiles/transactions/list
-- [x] in v. 1.0.1 v2/parks/driver-profiles/transactions
-- [x] in v. 1.2.1 v1/parks/driver-work-rules
+- [x] in v. 1.0.1 POST v1/parks/driver-profiles/list
+- [x] in v. 1.0.1 POST v1/parks/orders/list
+- [x] in v. 1.0.1 POST v2/parks/driver-profiles/transactions/list
+- [x] in v. 1.0.1 POST v2/parks/driver-profiles/transactions
+- [x] in v. 1.2.1 GET v1/parks/driver-work-rules
+- [x] in v. 1.2.4 POST v1/parks/cars/list
+- [x] in v. 1.2.4 GET v2/parks/vehicles/car
+- [x] in v. 1.2.4 PUT & DELETE v1/parks/driver-profiles/car-bindings
+- [x] in v. 1.3.1 POST & PUT v2/parks/vehicles/car
 
-- [ ] v2/parks/vehicles/car
-- [ ] v1/parks/cars/list
-- [ ] v1/parks/driver-profiles/car-bindings
 - [ ] v2/parks/contractors/driver-profile
 - [ ] v1/parks/orders/track
 - [ ] v2/parks/transactions/list
@@ -115,6 +116,20 @@ let data = await fleet.cars();
 let data = await fleet.carInfo(carId);
 ```
 carId is an Yandex ID that you can get using fleet.cars() method
+
+#### Create car record
+```
+let data = await fleet.carCreate(data);
+```
+data is an object with specification required by Yandex (see official documentation for details)
+
+#### Edit car details
+```
+let data = await fleet.carEdit(carId, data);
+```
+carId is an Yandex ID that you can get using fleet.cars() method
+
+data is an object with specification required by Yandex (see official documentation for details)
 
 #### Bind car to driver
 ```

@@ -109,7 +109,9 @@ class Fleet {
     };	
     
     /*Unified execute action with callback*/
-    execute(operation, method, data, idKey, callback) {
+    execute(operation, method, params, data, idKey, callback) {
+        data = data || {};
+        params = params || {};
         if (!callback instanceof Function) {
             throw messages[this.#language].callback_invalid;
         } else if (!this.isObject(data)) {
@@ -120,6 +122,8 @@ class Fleet {
             /*Send data to server*/
             let query = {
                 method : method,
+                params : params,
+                data : data,
                 url : `${this.execURLPrefix}${operation}${this.execURLSuffix}`,
                 headers : {
                     'X-Client-ID' : `taxi/park/${this.#parkID}`,
@@ -127,11 +131,6 @@ class Fleet {
                     'X-Idempotency-Token' : idKey || this.randHex(32)
                 }
             };
-            if (method === 'GET') {
-                query.params = data
-            } else {
-                query.data = data
-            }
 
             axios(query)
                 .then((result) => {
@@ -146,9 +145,9 @@ class Fleet {
     }
 
     /*Promisified execution for queue*/
-    executePromise(operation, method, data, idKey) {
+    executePromise(operation, method, params, data, idKey) {
         return new Promise((resolve, reject) => {
-            this.execute(operation, method, data, idKey, (error, data) => {
+            this.execute(operation, method, params, data, idKey, (error, data) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -164,7 +163,7 @@ class Fleet {
         if (item) {
             try {
                 /*Wait until operation finished because of Yandex limitations*/
-                let data = await this.executePromise(item.operation, item.method, item.data, item.idKey);
+                let data = await this.executePromise(item.operation, item.method, item.params, item.data, item.idKey);
                 item.callback(false, data);
             } catch (error) {
                 item.callback(error, false);
@@ -175,10 +174,11 @@ class Fleet {
     }
 
     /*Append task to queue*/
-    queue(operation, method, data, idKey, callback) {
+    queue(operation, method, params, data, idKey, callback) {
         let item = {
             method : method,
             operation : operation,
+            params : params,
             data : data,
             callback : callback,
             idKey : idKey
@@ -208,7 +208,7 @@ class Fleet {
             ]
         };
         return new Promise((resolve, reject) => {
-            this.queue(commands[0], 'POST', data, null, (err, res) => {
+            this.queue(commands[0], 'POST', null, data, null, (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -235,7 +235,7 @@ class Fleet {
         };
 
         return new Promise((resolve, reject) => {
-            this.queue(commands[1], 'POST', data, null, (err, res) => {
+            this.queue(commands[1], 'POST', null, data, null, (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -273,7 +273,7 @@ class Fleet {
         }
 
         return new Promise((resolve, reject) => {
-            this.queue(commands[2], 'POST', data, null, (err, res) => {
+            this.queue(commands[2], 'POST', null, data, null, (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -301,7 +301,7 @@ class Fleet {
         }
 
         return new Promise((resolve, reject) => {
-            this.queue(commands[3], 'POST', data, idKey, (err, res) => {
+            this.queue(commands[3], 'POST', null, data, idKey, (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -312,11 +312,11 @@ class Fleet {
 
     /*Task for listing all workrules*/
     workRules() {
-        let data = {
+        let params = {
             park_id: this.#parkID
         }
         return new Promise((resolve, reject) => {
-            this.queue(commands[4], 'GET', data, null, (err, res) => {
+            this.queue(commands[4], 'GET', params, null, null, (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -337,7 +337,7 @@ class Fleet {
             }
         };
         return new Promise((resolve, reject) => {
-            this.queue(commands[5], 'POST', data, null, (err, res) => {
+            this.queue(commands[5], 'POST', null, data, null, (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -346,13 +346,40 @@ class Fleet {
         });
     }
 
-    /*Task for getting car vehicle info*/
+    /*Task for getting vehicle info*/
     carInfo(vehicle_id) {
-        let data = {
+        let params = {
             vehicle_id: vehicle_id
         }
         return new Promise((resolve, reject) => {
-            this.queue(commands[6], 'GET', data, null, (err, res) => {
+            this.queue(commands[6], 'GET', params, null, null, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
+
+    /*Task for creating vehicle record*/
+    carCreate(data) {
+        return new Promise((resolve, reject) => {
+            this.queue(commands[6], 'POST', null, data, null, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
+
+    /*Task for editing vehicle record*/
+    carEdit(vehicle_id, data) {
+        let params = {
+            vehicle_id: vehicle_id
+        }
+        return new Promise((resolve, reject) => {
+            this.queue(commands[6], 'PUT', params, data, null, (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -363,13 +390,13 @@ class Fleet {
 
     /*Task for binding car to driver*/
     carBind(vehicle_id, driver_id) {
-        let data = {
+        let params = {
             park_id: this.#parkID,
             car_id: vehicle_id,
             driver_profile_id: driver_id
         }
         return new Promise((resolve, reject) => {
-            this.queue(commands[7], 'PUT', data, null, (err, res) => {
+            this.queue(commands[7], 'PUT', params, null, null, (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -380,13 +407,13 @@ class Fleet {
 
     /*Task for unbinding car to driver*/
     carUnbind(vehicle_id, driver_id) {
-        let data = {
+        let params = {
             park_id: this.#parkID,
             car_id: vehicle_id,
             driver_profile_id: driver_id
         }
         return new Promise((resolve, reject) => {
-            this.queue(commands[7], 'DELETE', data, null, (err, res) => {
+            this.queue(commands[7], 'DELETE', params, null, null, (err, res) => {
                 if (err) {
                     reject(err);
                 }
