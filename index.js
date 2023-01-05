@@ -40,16 +40,17 @@ const messages = {
 
 const commands = [
     /*Append on 1.0.0*/
-    'v1/parks/driver-profiles/list', //
-    'v1/parks/orders/list', //
-    'v2/parks/driver-profiles/transactions/list', //
-    'v2/parks/driver-profiles/transactions', //
+    'v1/parks/driver-profiles/list',
+    'v1/parks/orders/list',
+    'v2/parks/driver-profiles/transactions/list',
+    'v2/parks/driver-profiles/transactions',
     /*Append on 1.2.0*/
     'v1/parks/driver-work-rules',
-    /*Planned on 1.2.x*/
-    'v2/parks/vehicles/car',
+    /*Append on 1.2.4*/
     'v1/parks/cars/list',
+    'v2/parks/vehicles/car',
     'v1/parks/driver-profiles/car-bindings',
+    /*Planned on 1.2.x*/
     'v2/parks/contractors/driver-profile',
     'v1/parks/orders/track',
     'v2/parks/transactions/list',
@@ -92,7 +93,7 @@ class Fleet {
     };
     
     isArray = (a) => {
-    return (!!a) && (a.constructor === Array);
+        return (!!a) && (a.constructor === Array);
     };
 
     randHex = (len) => {
@@ -323,6 +324,77 @@ class Fleet {
             });
         });
     }
+
+    /*Task for listing cars*/
+    cars() {
+        let data = {
+            limit : 1000,
+            offset : 0,
+            query : {
+                park : {
+                    id : this.#parkID
+                }
+            }
+        };
+        return new Promise((resolve, reject) => {
+            this.queue(commands[5], 'POST', data, null, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
+
+    /*Task for getting car vehicle info*/
+    carInfo(vehicle_id) {
+        let data = {
+            vehicle_id: vehicle_id
+        }
+        return new Promise((resolve, reject) => {
+            this.queue(commands[6], 'GET', data, null, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
+
+    /*Task for binding car to driver*/
+    carBind(vehicle_id, driver_id) {
+        let data = {
+            park_id: this.#parkID,
+            car_id: vehicle_id,
+            driver_profile_id: driver_id
+        }
+        return new Promise((resolve, reject) => {
+            this.queue(commands[7], 'PUT', data, null, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
+
+    /*Task for unbinding car to driver*/
+    carUnbind(vehicle_id, driver_id) {
+        let data = {
+            park_id: this.#parkID,
+            car_id: vehicle_id,
+            driver_profile_id: driver_id
+        }
+        return new Promise((resolve, reject) => {
+            this.queue(commands[7], 'DELETE', data, null, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
+
 }
 
 /*Export class to outside*/

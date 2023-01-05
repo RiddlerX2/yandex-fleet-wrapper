@@ -104,3 +104,31 @@ If one transaction with the same idKey is executed then next one is declined
 ```
 let data = await fleet.workRules();
 ```
+
+#### Get list of cars
+```
+let data = await fleet.cars();
+```
+
+#### Get car details
+```
+let data = await fleet.carInfo(carId);
+```
+carId is an Yandex ID that you can get using fleet.cars() method
+
+#### Bind car to driver
+```
+let data = await fleet.carBind(carId, driverId);
+```
+carId is an Yandex ID that you can get using fleet.cars() method
+
+driverId is an Yandex ID that you can get using fleet.drivers() method
+
+#### Unbind car from driver
+```
+let data = await fleet.carUnbind(carId, driverId);
+```
+carId is an Yandex ID that you can get using fleet.cars() method
+
+driverId is an Yandex ID that you can get using fleet.drivers() method
+
